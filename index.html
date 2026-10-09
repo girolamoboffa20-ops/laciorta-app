@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="La Ciorta">
+<meta name="theme-color" content="#3E636B">
+<title>La Ciorta</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --ink:#1B2733; --muted:#5E6B78; --line:#DCE2E8; --soft:#E8EDF2;
+  --accent:#2458A6; --accent-ink:#FFFFFF; --sunday:#FBEFC2; --today:#DCE8F8;
+  --r-quadrifoglio:#2F7D4A; --r-coccinella:#C0392B; --r-cornetto:#D9772E; --r-ferro:#5B6B7A;
+  --st-inc:#DDF1E3; --st-inc-ink:#1E6B3D; --st-tds:#FCE3CC; --st-tds-ink:#9A4B0E; --st-arr:#FBF0B8; --st-arr-ink:#7A6200;
+  --danger:#B42318;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A22; --surface:#1A2530; --ink:#E6ECF2; --muted:#9AA8B5; --line:#2C3A47; --soft:#223040;
+    --accent:#6E9BE0; --accent-ink:#0E1620; --sunday:#3A3320; --today:#1F3350;
+    --r-quadrifoglio:#5DB57C; --r-coccinella:#E8665A; --r-cornetto:#F09B55; --r-ferro:#93A4B4;
+    --st-inc:#1D3B2A; --st-inc-ink:#8FD6A8; --st-tds:#43301C; --st-tds-ink:#F5B57A; --st-arr:#3D3614; --st-arr-ink:#EBD46A;
+    --danger:#FF8A80;
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#121A22; --surface:#1A2530; --ink:#E6ECF2; --muted:#9AA8B5; --line:#2C3A47; --soft:#223040;
+    --accent:#6E9BE0; --accent-ink:#0E1620; --sunday:#3A3320; --today:#1F3350;
+    --r-quadrifoglio:#5DB57C; --r-coccinella:#E8665A; --r-cornetto:#F09B55; --r-ferro:#93A4B4;
+    --st-inc:#1D3B2A; --st-inc-ink:#8FD6A8; --st-tds:#43301C; --st-tds-ink:#F5B57A; --st-arr:#3D3614; --st-arr-ink:#EBD46A;
+    --danger:#FF8A80;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:16px; line-height:1.45; -webkit-text-size-adjust:100%;
+  font-variant-numeric:tabular-nums;
+}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none !important}
+
+/* ---------- sblocco ---------- */
+#lock{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.lock-box{width:100%;max-width:360px}
+.mark{display:block;width:72px;height:72px;border-radius:16px;margin-bottom:20px}
+.lock-box h1{font-size:28px;line-height:1.15;margin:0 0 6px}
+.lock-box p{margin:0 0 24px;color:var(--muted)}
+.field{display:block;width:100%;padding:14px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);font-size:17px}
+.field:focus{border-color:var(--accent);outline:none}
+.check{display:flex;gap:10px;align-items:center;margin:14px 0 20px;color:var(--muted)}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:17px}
+.btn[disabled]{opacity:.6}
+.err{color:var(--danger);min-height:1.45em;margin-top:12px}
+
+/* ---------- struttura ---------- */
+#app{max-width:640px;margin:0 auto;padding:0 16px calc(84px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(12px + env(safe-area-inset-top)) 0 10px;display:flex;align-items:center;gap:12px}
+header h1{font-size:22px;margin:0;flex:1;line-height:1.2}
+header h1 small{display:block;font-size:13px;font-weight:400;color:var(--muted)}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center;padding:0}
+.icon-btn svg{width:20px;height:20px}
+.spin svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.spin svg{animation:none}}
+
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);
+  display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs .wrap{display:flex;max-width:640px;width:100%}
+nav.tabs button{flex:1;border:0;background:none;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:13px;border-radius:10px}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button[aria-selected="true"]{color:var(--accent);font-weight:700}
+
+.today-line{font-size:17px;margin:4px 0 16px}
+.today-line b{font-weight:700}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:15px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.monthbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
+.monthbar strong{font-size:18px}
+.monthbar strong::first-letter,.cl-day::first-letter{text-transform:uppercase}
+.search{margin-bottom:12px}
+.search input{padding:11px 14px;font-size:16px}
+
+/* ---------- prenotazioni ---------- */
+.list{list-style:none;margin:0;padding:0}
+.bk{background:var(--surface);border-radius:12px;margin-bottom:8px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.bk::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--room)}
+.bk > button{all:unset;display:grid;grid-template-columns:1fr auto;grid-template-areas:"name price" "meta meta" "st due";align-items:center;gap:2px 12px;padding:12px 14px 12px 18px;width:100%;box-sizing:border-box;cursor:pointer}
+.bk > button:focus-visible{outline:3px solid var(--accent);outline-offset:-3px;border-radius:12px}
+.bk .name{grid-area:name;font-weight:700;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk .price{grid-area:price;font-weight:700;text-align:right}
+.bk .meta{grid-area:meta;color:var(--muted);font-size:14px}
+.bk .st{grid-area:st;min-height:4px}
+.bk .st .pill{margin-left:0}
+.bk .due{grid-area:due;font-size:14px;text-align:right;color:var(--danger);font-weight:700}
+.bk .paid{grid-area:due;font-size:14px;text-align:right;color:var(--muted)}
+.pill{display:inline-block;font-size:12.5px;font-weight:700;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+.pill.inc{background:var(--st-inc);color:var(--st-inc-ink)}
+.pill.tds{background:var(--st-tds);color:var(--st-tds-ink)}
+.pill.arr{background:var(--st-arr);color:var(--st-arr-ink)}
+.details{display:none;padding:0 14px 14px 18px;font-size:15px}
+.bk.open .details{display:block}
+.details dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;padding-top:10px;border-top:1px solid var(--line)}
+.details dt{color:var(--muted)}
+.details dd{margin:0}
+.totals{margin:16px 0 8px;padding:14px;border-radius:12px;background:var(--soft);display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:15px}
+.totals span{color:var(--muted)}
+.totals b{display:block;font-size:17px}
+.empty{padding:32px 8px;text-align:center;color:var(--muted)}
+
+/* ---------- occupazione ---------- */
+.occ-head{display:grid;grid-template-columns:52px repeat(4,1fr);gap:4px;position:sticky;top:64px;z-index:4;background:var(--bg);padding:6px 0 8px}
+.occ-head .rh{text-align:center;font-size:12.5px;line-height:1.2;overflow:hidden}
+.occ-head .rh i{display:block;width:100%;height:4px;border-radius:2px;background:var(--room);margin-bottom:4px}
+.occ-head .rh b{display:block;font-size:15px}
+.occ-sum{font-size:16px;margin:0 0 10px}
+.occ{display:grid;grid-template-columns:52px repeat(4,1fr);gap:0 4px;position:relative}
+.occ .days{grid-column:1}
+.occ .day{height:var(--rowh);display:flex;align-items:center;gap:6px;font-size:14px;border-top:1px solid var(--line);padding-left:2px}
+.occ .day .wd{color:var(--muted);font-size:12px;width:12px}
+.occ .day.sun{background:var(--sunday)}
+.occ .day.now{background:var(--today);font-weight:700}
+.occ .col{position:relative;background:repeating-linear-gradient(to bottom,var(--surface) 0,var(--surface) calc(var(--rowh) - 1px),var(--line) calc(var(--rowh) - 1px),var(--line) var(--rowh));border-radius:6px}
+.stay{position:absolute;left:3px;right:3px;background:var(--room);border-radius:9px;color:#fff;font-size:12px;line-height:1.2;padding:3px 5px;overflow:hidden;border:0;text-align:left}
+.stay.cut-top{border-top-left-radius:0;border-top-right-radius:0}
+.stay.cut-bot{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.stay span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.legend{color:var(--muted);font-size:14px;margin:14px 0 0}
+.nowline{position:absolute;left:0;right:0;height:0;border-top:2px dashed var(--accent);pointer-events:none;z-index:0}
+.stay{z-index:1}
+
+/* ---------- pulizie ---------- */
+.range{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.range > div{min-width:0}
+.range input{min-width:0;width:100%}
+.range label{font-size:13px;color:var(--muted)}
+.range input{padding:10px 12px;font-size:16px}
+.cl-day{margin:18px 0 6px;font-size:15px;color:var(--muted)}
+.cl{display:grid;grid-template-columns:12px 1fr auto;align-items:center;gap:4px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.cl .sw{width:12px;height:12px;border-radius:50%;background:var(--room)}
+.cl .room{font-weight:700}
+.cl .sub{grid-column:2;color:var(--muted);font-size:14px}
+.cl .eur{font-weight:700;grid-row:1 / span 2;grid-column:3}
+.flag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent)}
+.cl-total{margin-top:16px;padding:16px;border-radius:12px;background:var(--ink);color:var(--bg);display:flex;justify-content:space-between;align-items:baseline;font-size:17px}
+.cl-total b{font-size:24px}
+
+/* ---------- foglio dettaglio (occupazione) ---------- */
+.sheet-bg{position:fixed;inset:0;background:rgba(10,16,24,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;border-radius:16px 16px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));max-height:80dvh;overflow:auto}
+.sheet h2{margin:0 0 4px;font-size:20px}
+.sheet .close{float:right}
+</style>
+</head>
+<body>
+
+<!-- ========== SBLOCCO ========== -->
+<section id="lock" class="hidden">
+  <form class="lock-box" id="lockForm" autocomplete="on">
+    <img class="mark" src="icon-192.png" alt="" width="72" height="72">
+    <h1>Residenza La Ciorta</h1>
+    <p>Prenotazioni, occupazione e pulizie, aggiornate dall'Excel.</p>
+    <input type="text" name="username" value="laciorta" autocomplete="username" class="hidden" aria-hidden="true" tabindex="-1">
+    <label for="pwd" class="hidden">Password</label>
+    <input class="field" id="pwd" type="password" placeholder="Password" autocomplete="current-password" required>
+    <label class="check"><input type="checkbox" id="remember" checked> Ricorda su questo telefono</label>
+    <button class="btn" id="unlockBtn" type="submit">Apri</button>
+    <div class="err" id="lockErr" role="alert"></div>
+  </form>
+</section>
+
+<!-- ========== APP ========== -->
+<div id="app" class="hidden">
+  <header>
+    <h1 id="title">Prenotazioni<small id="stamp"></small></h1>
+    <button class="icon-btn" id="refreshBtn" aria-label="Aggiorna i dati">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+    </button>
+    <button class="icon-btn" id="logoutBtn" aria-label="Esci e dimentica la password">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </button>
+  </header>
+  <main id="view"></main>
+</div>
+
+<nav class="tabs hidden" id="tabs" aria-label="Sezioni">
+  <div class="wrap" role="tablist">
+    <button role="tab" data-tab="pren" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
+      Prenotazioni</button>
+    <button role="tab" data-tab="occ" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 13v5M12 13v3M16 13v6"/></svg>
+      Occupazione</button>
+    <button role="tab" data-tab="pul" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l-4 9"/><path d="M6 12h10l2 9H4z"/><path d="M8 16v5M12 16v5"/></svg>
+      Pulizie</button>
+  </div>
+</nav>
+
+<div id="sheet" class="sheet-bg hidden" role="dialog" aria-modal="true"></div>
+
+<script>
+"use strict";
+/* ================= costanti e utilita ================= */
+const ROOM_VAR = {"Quadrifoglio":"--r-quadrifoglio","Coccinella":"--r-coccinella","Cornetto":"--r-cornetto","Ferro di Cavallo":"--r-ferro"};
+const MESI = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+const GG = ["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"];
+const KEY = "laciorta.pwd";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur = v => "€ " + Number(v||0).toLocaleString("it-IT",{minimumFractionDigits: v%1 ? 2 : 0, maximumFractionDigits:2});
+const roomStyle = c => `--room:var(${ROOM_VAR[c] || "--muted"})`;
+
+// le date sono gestite come numero di giorno (UTC) per evitare problemi di fuso
+const dayNum = s => { const [y,m,d] = s.split("-").map(Number); return Date.UTC(y,m-1,d)/864e5; };
+const todayNum = () => { const n = new Date(); return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate())/864e5; };
+const toDate = n => new Date(n*864e5);
+const iso = n => toDate(n).toISOString().slice(0,10);
+const fmtShort = n => { const d = toDate(n); return d.getUTCDate() + " " + MESI[d.getUTCMonth()].slice(0,3); };
+const fmtLong = n => { const d = toDate(n); return GG[d.getUTCDay()] + " " + d.getUTCDate() + " " + MESI[d.getUTCMonth()]; };
+const monthStart = (y,m) => Date.UTC(y,m,1)/864e5;
+const daysIn = (y,m) => new Date(Date.UTC(y,m+1,0)).getUTCDate();
+
+/* ================= cifratura ================= */
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function decrypt(env, pwd){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pwd), "PBKDF2", false, ["deriveBits"]);
+  const bits = new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt:b64(env.salt), iterations:env.iter}, base, 512));
+  const encKey = await crypto.subtle.importKey("raw", bits.slice(0,32), {name:"AES-CBC"}, false, ["decrypt"]);
+  const macKey = await crypto.subtle.importKey("raw", bits.slice(32), {name:"HMAC", hash:"SHA-256"}, false, ["verify"]);
+  const iv = b64(env.iv), ct = b64(env.ct);
+  const buf = new Uint8Array(iv.length + ct.length); buf.set(iv); buf.set(ct, iv.length);
+  if (!await crypto.subtle.verify("HMAC", macKey, b64(env.mac), buf)) throw new Error("PWD");
+  const pt = await crypto.subtle.decrypt({name:"AES-CBC", iv}, encKey, ct);
+  return JSON.parse(new TextDecoder().decode(pt).replace(/^﻿/, ""));
+}
+// I dati cifrati stanno su GitHub (aggiornati gratis a ogni salvataggio dell'Excel).
+// Prima scelta: API di GitHub, sempre aggiornata. Riserva: raw.githubusercontent.com
+// (puo' avere fino a 5 minuti di ritardo), usata se l'API non risponde o ha raggiunto il limite orario.
+const DATA_REPO = "girolamoboffa20-ops/laciorta-dati";
+async function fetchEnvelope(){
+  let r = null;
+  try { r = await fetch("https://api.github.com/repos/" + DATA_REPO + "/contents/dati.json?t=" + Date.now(), {cache:"no-store"}); }
+  catch(e){ r = null; }
+  if (r && r.ok){
+    const j = await r.json();
+    return JSON.parse(atob(String(j.content || "").replace(/\s/g, "")));
+  }
+  if (r && r.status === 404) throw new Error("NODATA");
+  try { r = await fetch("https://raw.githubusercontent.com/" + DATA_REPO + "/main/dati.json?t=" + Date.now(), {cache:"no-store"}); }
+  catch(e){ throw new Error("NET"); }
+  if (!r.ok) throw new Error(r.status === 404 ? "NODATA" : "NET");
+  return r.json();
+}
+const store = {
+  get(){ try { return localStorage.getItem(KEY); } catch(e){ return null; } },
+  set(v){ try { localStorage.setItem(KEY, v); } catch(e){} },
+  del(){ try { localStorage.removeItem(KEY); } catch(e){} }
+};
+
+/* ================= stato ================= */
+let DATA = null, PWD = null, loadedAt = 0;
+const S = {
+  tab: "pren",
+  pren: { filtro: "daoggi", y: 0, m: 0, q: "", open: null },
+  occ:  { y: 0, m: 0 },
+  pul:  { preset: "sett", da: 0, a: 0 }
+};
+
+function prepare(raw){
+  const camere = raw.camere && raw.camere.length ? raw.camere : Object.keys(ROOM_VAR);
+  const bk = raw.prenotazioni.filter(b => b.arrivo && b.partenza).map(b => {
+    const a = dayNum(b.arrivo), p = dayNum(b.partenza);
+    const saldo = b.incassato ? 0 : (b.incParz ? b.prezzo - b.valIncParz : b.prezzo);
+    const stato = b.incassato ? "inc" : (b.tdsInc ? "tds" : (b.arrivato ? "arr" : ""));
+    return {...b, a, p, saldo, stato};
+  }).sort((x,y) => x.a - y.a || camere.indexOf(x.camera) - camere.indexOf(y.camera));
+  return {camere, bk, generato: raw.generato, pul: raw.pulizie || {sogliaNotti:4, breve:16, lunga:20}};
+}
+
+/* ================= sblocco ================= */
+async function load(pwd){
+  const env = await fetchEnvelope();
+  const raw = await decrypt(env, pwd);
+  DATA = prepare(raw); PWD = pwd; loadedAt = Date.now();
+}
+function showLock(msg){
+  $("#app").classList.add("hidden"); $("#tabs").classList.add("hidden");
+  $("#lock").classList.remove("hidden"); $("#lockErr").textContent = msg || "";
+  $("#pwd").value = ""; $("#pwd").focus();
+}
+function showApp(){
+  $("#lock").classList.add("hidden");
+  $("#app").classList.remove("hidden"); $("#tabs").classList.remove("hidden");
+  render();
+}
+function errText(e){
+  if (e.message === "PWD") return "Password errata.";
+  if (e.message === "NODATA") return "Non ci sono ancora dati pubblicati: salva l'Excel sul PC per pubblicarli.";
+  if (e.message === "NET") return "Dati non raggiungibili. Controlla la connessione e riprova.";
+  return "Impossibile leggere i dati (" + e.message + ").";
+}
+$("#lockForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const pwd = $("#pwd").value; if (!pwd) return;
+  const btn = $("#unlockBtn"); btn.disabled = true; btn.textContent = "Apro…"; $("#lockErr").textContent = "";
+  try {
+    await load(pwd);
+    if ($("#remember").checked) store.set(pwd); else store.del();
+    showApp();
+  } catch(e){ $("#lockErr").textContent = errText(e); }
+  finally { btn.disabled = false; btn.textContent = "Apri"; }
+});
+async function refresh(){
+  const b = $("#refreshBtn"); b.classList.add("spin");
+  try { await load(PWD); render(); }
+  catch(e){ if (e.message === "PWD") { store.del(); showLock("La password è cambiata: inserisci quella nuova."); } else alert(errText(e)); }
+  finally { b.classList.remove("spin"); }
+}
+$("#refreshBtn").addEventListener("click", refresh);
+$("#logoutBtn").addEventListener("click", () => { store.del(); DATA = null; PWD = null; showLock(""); });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && PWD && Date.now() - loadedAt > 5*60*1000) refresh();
+});
+
+/* ================= navigazione ================= */
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => {
+  S.tab = b.dataset.tab;
+  document.querySelectorAll("nav.tabs button").forEach(x => x.setAttribute("aria-selected", x === b));
+  window.scrollTo(0,0); render();
+}));
+function render(){
+  const titles = {pren:"Prenotazioni", occ:"Occupazione", pul:"Pulizie"};
+  const g = DATA.generato ? new Date(DATA.generato) : null;
+  const stamp = g && !isNaN(g) ? "Dati del " + g.getDate() + " " + MESI[g.getMonth()] + ", ore " + String(g.getHours()).padStart(2,"0") + ":" + String(g.getMinutes()).padStart(2,"0") : "";
+  $("#title").innerHTML = titles[S.tab] + '<small>' + esc(stamp) + '</small>';
+  ({pren: renderPren, occ: renderOcc, pul: renderPul})[S.tab]();
+}
+
+/* ================= PRENOTAZIONI ================= */
+function statoPill(b){
+  if (b.stato === "inc") return '<span class="pill inc">Incassato</span>';
+  if (b.stato === "tds") return '<span class="pill tds">TdS incassata</span>';
+  if (b.stato === "arr") return '<span class="pill arr">Arrivato</span>';
+  return "";
+}
+function todaySentence(){
+  const t = todayNum();
+  const arr = DATA.bk.filter(b => b.a === t).length;
+  const par = DATA.bk.filter(b => b.p === t).length;
+  const occ = new Set(DATA.bk.filter(b => b.a <= t && b.p > t).map(b => b.camera)).size;
+  const n = (k, s, p) => k === 0 ? "nessun" + (s === "arrivo" ? " arrivo" : "a partenza") : k + " " + (k === 1 ? s : p);
+  return `<p class="today-line"><b>Oggi, ${esc(fmtLong(t))}:</b> ${n(arr,"arrivo","arrivi")}, ${n(par,"partenza","partenze")}; stanotte ${occ} ${occ===1?"camera occupata":"camere occupate"} su ${DATA.camere.length}.</p>`;
+}
+function renderPren(){
+  const st = S.pren, t = todayNum();
+  if (!st.y){ const d = toDate(t); st.y = d.getUTCFullYear(); st.m = d.getUTCMonth(); }
+  let list = DATA.bk;
+  if (st.filtro === "daoggi") list = list.filter(b => b.p >= t);
+  else if (st.filtro === "incasa") list = list.filter(b => b.a <= t && b.p > t);
+  else if (st.filtro === "mese"){ const s = monthStart(st.y, st.m), e = s + daysIn(st.y, st.m); list = list.filter(b => b.a >= s && b.a < e); }
+  else if (st.filtro === "dasaldare") list = list.filter(b => b.saldo > 0.005);
+  const q = st.q.trim().toLowerCase();
+  if (q) list = list.filter(b => (b.ospite + " " + b.camera + " " + b.canale).toLowerCase().includes(q));
+
+  const chip = (k, l) => `<button class="chip" data-f="${k}" aria-pressed="${st.filtro===k}">${l}</button>`;
+  let h = todaySentence();
+  h += `<div class="chips">${chip("daoggi","Da oggi")}${chip("incasa","In casa ora")}${chip("mese","Per mese")}${chip("dasaldare","Da incassare")}${chip("tutte","Tutte")}</div>`;
+  if (st.filtro === "mese") h += monthBar("pm", st.y, st.m);
+  h += `<div class="search"><input class="field" id="q" type="search" placeholder="Cerca ospite, camera o canale" value="${esc(st.q)}"></div>`;
+
+  if (!list.length) h += `<p class="empty">Nessuna prenotazione per questo filtro.</p>`;
+  else {
+    h += '<ul class="list">' + list.map(b => {
+      const due = b.saldo > 0.005 ? `<div class="due">da incassare ${eur(b.saldo)}</div>` : `<div class="paid">saldato</div>`;
+      return `<li class="bk${st.open===b.id?" open":""}" style="${roomStyle(b.camera)}">
+        <button data-id="${b.id}" aria-expanded="${st.open===b.id}">
+          <div class="name">${esc(b.ospite)}</div><div class="price">${eur(b.prezzo)}</div>
+          <div class="meta">${esc(b.camera)}, ${fmtShort(b.a)} – ${fmtShort(b.p)}, ${b.notti} ${b.notti===1?"notte":"notti"}</div><div class="st">${statoPill(b)}</div>${due}
+        </button>
+        <div class="details">${detailDl(b)}</div></li>`;
+    }).join("") + "</ul>";
+    const tot = list.reduce((s,b) => (s.n++, s.notti += b.notti, s.val += b.prezzo, s.saldo += b.saldo, s), {n:0, notti:0, val:0, saldo:0});
+    h += `<div class="totals"><div><span>Prenotazioni</span><b>${tot.n}</b></div><div><span>Notti</span><b>${tot.notti}</b></div>
+          <div><span>Valore</span><b>${eur(tot.val)}</b></div><div><span>Da incassare</span><b>${eur(tot.saldo)}</b></div></div>`;
+  }
+  $("#view").innerHTML = h;
+
+  $("#view").querySelectorAll(".chip[data-f]").forEach(c => c.onclick = () => { st.filtro = c.dataset.f; renderPren(); });
+  $("#view").querySelectorAll(".bk > button").forEach(b => b.onclick = () => { const id = +b.dataset.id; st.open = st.open === id ? null : id; renderPren(); });
+  bindMonthBar("pm", (y,m) => { st.y = y; st.m = m; renderPren(); });
+  const qi = $("#q"); qi.oninput = () => { st.q = qi.value; const pos = qi.selectionStart; renderPren(); const n = $("#q"); n.focus(); n.setSelectionRange(pos,pos); };
+}
+function detailDl(b){
+  const row = (k, v) => v === "" || v == null ? "" : `<dt>${k}</dt><dd>${v}</dd>`;
+  return `<dl>
+    ${row("Arrivo", esc(fmtLong(b.a)))}${row("Partenza", esc(fmtLong(b.p)))}
+    ${row("Persone", b.persone || "")}${row("Canale", esc(b.canale))}
+    ${row("Prezzo", eur(b.prezzo))}
+    ${b.incParz ? row("Acconto", eur(b.valIncParz)) : ""}
+    ${row("Saldo", b.saldo > 0.005 ? eur(b.saldo) : "saldato")}
+    ${row("Tassa soggiorno", b.tds ? eur(b.tds) + (b.tdsInc ? ", incassata" : ", da incassare") : "esente")}
+    ${row("Arrivato", b.arrivato ? "sì" : "no")}
+    ${row("Provenienza", esc(b.provenienza))}${row("Note", esc(b.note))}
+  </dl>`;
+}
+function monthBar(id, y, m){
+  return `<div class="monthbar"><button class="icon-btn" id="${id}-prev" aria-label="Mese precedente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <strong>${MESI[m]} ${y}</strong>
+    <button class="icon-btn" id="${id}-next" aria-label="Mese successivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button></div>`;
+}
+function bindMonthBar(id, cb){
+  const p = document.getElementById(id + "-prev"), n = document.getElementById(id + "-next");
+  if (!p) return;
+  const cur = () => { const t = $("#" + id + "-prev").parentElement.querySelector("strong").textContent.split(" "); return [+t[1], MESI.indexOf(t[0])]; };
+  p.onclick = () => { let [y,m] = cur(); m--; if (m < 0){ m = 11; y--; } cb(y,m); };
+  n.onclick = () => { let [y,m] = cur(); m++; if (m > 11){ m = 0; y++; } cb(y,m); };
+}
+
+/* ================= OCCUPAZIONE ================= */
+function renderOcc(){
+  const st = S.occ, t = todayNum();
+  if (!st.y){ const d = toDate(t); st.y = d.getUTCFullYear(); st.m = d.getUTCMonth(); }
+  const s = monthStart(st.y, st.m), nd = daysIn(st.y, st.m), e = s + nd;
+  const rowh = 30;
+  const cam = DATA.camere;
+
+  // notti occupate nel mese, per camera
+  const nightsBy = {}; cam.forEach(c => nightsBy[c] = 0);
+  DATA.bk.forEach(b => { if (b.camera in nightsBy) nightsBy[b.camera] += Math.max(0, Math.min(b.p, e) - Math.max(b.a, s)); });
+  const totN = Object.values(nightsBy).reduce((x,y) => x+y, 0);
+  const pct = n => Math.round(100 * n / nd);
+
+  let h = monthBar("om", st.y, st.m);
+  h += `<p class="occ-sum">Occupazione del mese: <b>${Math.round(100*totN/(nd*cam.length))}%</b>, ${totN} notti vendute su ${nd*cam.length}.</p>`;
+  h += `<div class="occ-head"><div></div>${cam.map(c => `<div class="rh" style="${roomStyle(c)}"><i></i>${esc(c)}<b>${pct(nightsBy[c])}%</b></div>`).join("")}</div>`;
+  h += `<div class="occ" style="--rowh:${rowh}px"><div class="days">`;
+  for (let i = 0; i < nd; i++){
+    const dn = s + i, wd = toDate(dn).getUTCDay();
+    h += `<div class="day${wd===0?" sun":""}${dn===t?" now":""}"><span class="wd">${"DLMMGVS"[wd]}</span>${i+1}</div>`;
+  }
+  h += "</div>";
+  cam.forEach(c => {
+    h += `<div class="col" style="${roomStyle(c)}">`;
+    DATA.bk.filter(b => b.camera === c && b.p > s && b.a < e).forEach(b => {
+      // la barra parte a meta del giorno di arrivo e finisce a meta del giorno di partenza
+      const top0 = (b.a - s + 0.5) * rowh, bot0 = (b.p - s + 0.5) * rowh;
+      const cutTop = top0 < 0, cutBot = bot0 > nd * rowh;
+      const top = cutTop ? 0 : top0 + 2, bot = cutBot ? nd * rowh : bot0 - 2;
+      const label = (bot - top) >= 18 ? `<span>${esc(b.ospite.split(" ").slice(-1)[0])}</span>` : "";
+      h += `<button class="stay${cutTop?" cut-top":""}${cutBot?" cut-bot":""}" data-id="${b.id}" style="top:${top}px;height:${bot-top}px" aria-label="${esc(b.ospite)}, ${esc(fmtShort(b.a))} – ${esc(fmtShort(b.p))}">${label}</button>`;
+    });
+    h += "</div>";
+  });
+  if (t >= s && t < e) h += `<div class="nowline" style="top:${(t - s + 0.5)*rowh}px;grid-column:2 / span ${cam.length}" aria-hidden="true"></div>`;
+  h += "</div>";
+  h += `<p class="legend">Ogni barra è un soggiorno: comincia a metà del giorno di arrivo e finisce a metà del giorno di partenza, così i cambi in giornata si vedono come due barre che si toccano. Tocca una barra per i dettagli.</p>`;
+  $("#view").innerHTML = h;
+
+  bindMonthBar("om", (y,m) => { st.y = y; st.m = m; renderOcc(); });
+  $("#view").querySelectorAll(".stay").forEach(x => x.onclick = () => openSheet(DATA.bk.find(b => b.id == x.dataset.id)));
+}
+function openSheet(b){
+  if (!b) return;
+  const sh = $("#sheet");
+  sh.innerHTML = `<div class="sheet" style="${roomStyle(b.camera)}">
+    <button class="icon-btn close" aria-label="Chiudi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2>${esc(b.ospite)}</h2><p class="meta" style="margin:0 0 6px;color:var(--muted)">${esc(b.camera)}, ${b.notti} ${b.notti===1?"notte":"notti"} ${statoPill(b)}</p>
+    <div class="details" style="display:block;padding:0">${detailDl(b)}</div></div>`;
+  sh.classList.remove("hidden");
+  const close = () => sh.classList.add("hidden");
+  sh.querySelector(".close").onclick = close; sh.querySelector(".close").focus();
+  sh.onclick = ev => { if (ev.target === sh) close(); };
+  document.onkeydown = ev => { if (ev.key === "Escape") close(); };
+}
+
+/* ================= PULIZIE ================= */
+function presetRange(k){
+  const t = todayNum(), wd = (toDate(t).getUTCDay() + 6) % 7; // 0 = lunedi
+  const d = toDate(t), y = d.getUTCFullYear(), m = d.getUTCMonth();
+  if (k === "sett") return [t - wd, t - wd + 6];
+  if (k === "prox") return [t - wd + 7, t - wd + 13];
+  if (k === "mese") return [monthStart(y,m), monthStart(y,m) + daysIn(y,m) - 1];
+  if (k === "prec"){ const py = m === 0 ? y-1 : y, pm = m === 0 ? 11 : m-1; return [monthStart(py,pm), monthStart(py,pm) + daysIn(py,pm) - 1]; }
+  return null;
+}
+function renderPul(){
+  const st = S.pul, R = DATA.pul;
+  if (!st.da){ [st.da, st.a] = presetRange(st.preset); }
+  const costo = n => n <= R.sogliaNotti ? R.breve : R.lunga;
+  const list = DATA.bk.filter(b => b.p >= st.da && b.p <= st.a).sort((x,y) => x.p - y.p || DATA.camere.indexOf(x.camera) - DATA.camere.indexOf(y.camera));
+
+  const chip = (k, l) => `<button class="chip" data-p="${k}" aria-pressed="${st.preset===k}">${l}</button>`;
+  let h = `<div class="chips">${chip("sett","Questa settimana")}${chip("prox","Settimana prossima")}${chip("mese","Questo mese")}${chip("prec","Mese scorso")}</div>`;
+  h += `<div class="range"><div><label for="da">Dal</label><input class="field" type="date" id="da" value="${iso(st.da)}"></div>
+        <div><label for="a">Al</label><input class="field" type="date" id="a" value="${iso(st.a)}"></div></div>`;
+
+  if (!list.length) h += `<p class="empty">Nessuna partenza in questo periodo, quindi nessuna pulizia da fare.</p>`;
+  else {
+    let cur = null, tot = 0;
+    list.forEach(b => {
+      if (b.p !== cur){ cur = b.p; h += `<h2 class="cl-day">${esc(fmtLong(b.p))}</h2>`; }
+      const c = costo(b.notti); tot += c;
+      const rientro = DATA.bk.some(x => x.camera === b.camera && x.a === b.p);
+      h += `<div class="cl" style="${roomStyle(b.camera)}"><span class="sw"></span><span class="room">${esc(b.camera)}</span><span class="eur">${eur(c)}</span>
+            <span class="sub">${b.notti} ${b.notti===1?"notte":"notti"}${rientro ? ', <span class="flag">nuovo arrivo in giornata</span>' : ""}</span></div>`;
+    });
+    h += `<div class="cl-total"><span>${list.length} ${list.length===1?"pulizia":"pulizie"}</span><b>${eur(tot)}</b></div>`;
+    h += `<p class="legend">${eur(R.breve)} per soggiorni fino a ${R.sogliaNotti} notti, ${eur(R.lunga)} oltre. La pulizia si conta nel giorno di partenza.</p>`;
+  }
+  $("#view").innerHTML = h;
+
+  $("#view").querySelectorAll(".chip[data-p]").forEach(c => c.onclick = () => { st.preset = c.dataset.p; [st.da, st.a] = presetRange(st.preset); renderPul(); });
+  const upd = () => { const d = $("#da").value, a = $("#a").value; if (!d || !a) return; st.da = dayNum(d); st.a = dayNum(a); if (st.a < st.da) st.a = st.da; st.preset = ""; renderPul(); };
+  $("#da").onchange = upd; $("#a").onchange = upd;
+}
+
+/* ================= avvio ================= */
+(async () => {
+  const saved = store.get();
+  if (!saved){ showLock(""); return; }
+  try { await load(saved); showApp(); }
+  catch(e){ if (e.message === "PWD") store.del(); showLock(errText(e)); }
+})();
+</script>
+</body>
+</html>
